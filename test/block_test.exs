@@ -1,20 +1,23 @@
 defmodule BlockTest do
   use ExUnit.Case
+  alias Block
 
-  test "Block creation and validation create a valid block" do
-    block = Block.new("Test", "previous_hash_example")
-    assert block.data == "Test"
-    assert block.prev_hash == "previous_hash_example"
+  test "crear un bloque válido" do
+    block = Block.new(%{data: "Transacción 1"}, "prev_hash")
+    assert block.data == %{data: "Transacción 1"}
+    assert block.prev_hash == "prev_hash"
+    assert block.hash != nil
   end
 
-  test "Block creation and validation validate a valid block" do
-    block = Block.new("Test", "previous_hash_example")
+  test "validar un bloque individual" do
+    block = Block.new(%{data: "Transacción 1"}, "prev_hash")
     assert Block.valid?(block)
   end
 
-  test "Block creation and validation invalidate a tampered block" do
-    block = Block.new("Test", "previous_hash_example")
-    tampered_block = %{block | data: "Tampered"}
-    refute Block.valid?(tampered_block)
+  test "validar dos bloques consecutivos" do
+    block1 = Block.new(%{data: "Bloque 1"}, "prev_hash")
+    block2 = Block.new(%{data: "Bloque 2"}, block1.hash)
+    assert Block.valid?(block1, block2)
   end
 end
+

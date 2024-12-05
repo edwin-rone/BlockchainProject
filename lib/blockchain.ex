@@ -6,6 +6,28 @@ defmodule Blockchain do
 
   alias Block
 
+  defstruct [:blocks]
+
+  def new() do
+    %Blockchain{blocks: [%Block{data: "Genesis", prev_hash: "", hash: "GENESIS"}]}
+  end
+  
+  def insert(%Blockchain{blocks: blocks} = chain, data) do
+    last_block = List.last(blocks)
+    new_block = Block.new(data, last_block.hash)
+
+    if Block.valid?(last_block, new_block) do
+      {:ok, %Blockchain{blocks: blocks ++ [new_block]}}
+    else
+      {:error, :invalid_block}
+    end
+  end
+  
+  def valid?(%Blockchain{blocks: blocks}) do
+    Enum.chunk_every(blocks, 2, 1, :discard)
+    |> Enum.all?(fn [a, b] -> Block.valid?(a, b) end)
+  end
+  
   @doc """
   Inicializa una nueva blockchain con un bloque génesis.
   """

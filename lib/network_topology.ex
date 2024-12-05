@@ -37,6 +37,14 @@ defmodule NetworkTopology do
       end
     end)
   end
+  
+    def watts_strogatz(nodes, k, p) do
+    Enum.map(0..(nodes - 1), fn id ->
+      neighbors = for i <- 1..k, do: rem(id + i, nodes)
+      {id, neighbors}
+    end)
+    |> Enum.into(%{})
+  end
 
   def node_process(node_id) do
     receive do
